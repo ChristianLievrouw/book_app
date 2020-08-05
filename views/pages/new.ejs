@@ -2,27 +2,42 @@
 <html lang="en">
   <head>
     <title>Book Collection</title>
-    <link rel="stylesheet" href="styles/base.css"/>
+    <%- include('../layout/style-link') %>
   </head>
   <body>
+    <div class="container">
     <main>
+      <div class="part1">
       <h4>Search by Title or Author</h4>
       <form action="/searches" method="post">
         <input type="text" name="search" placeholder="Enter a title or author" required>
+        </div>
+        <div class="part2">
         <fieldset>
           <label for="title">
             <span>Title</span>
             <input type="radio" name="search" value="title" required>
           </label>
         </fieldset>
-        <fieldset>
+        </div>
+        <div class="part3">
+          <fieldset>
           <label for="author">
             <span>Author</span>
             <input type="radio" name="search" value="author" required>
           </label>
         </fieldset>
+        </div>
+        <div class="part4">
         <button type="submit">Search the Google Books API</button>
+        </div>
+        </div>
       </form>
+      <div class="part5">
+      </div>
+    </div>
     </main>
+    <%- include('../layout/footer') %>
+      </div>
   </body>
 </html>
