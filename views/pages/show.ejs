@@ -5,9 +5,17 @@
   </head>
   <body>
     <main>
-      <% searchResults.forEach( book => { %>
-      <h3><%= book.title %></h3>
-     <% }) %>
+      <h2>Search Results</h2>
+      <div id="card-container">
+        <% searchResults.forEach( book => { %>
+        <div class="book-card">
+          <img src="<%= book.image_url %><" alt="<%= book.title %>">
+          <h3><%= book.title %></h3>
+          <span><%= book.authors %></span>
+          <p><%= book.description %></p>
+          <% }) %>
+        </div>
+      </div>
     </main>
   </body>
 </html>
