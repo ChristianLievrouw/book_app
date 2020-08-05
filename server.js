@@ -3,6 +3,7 @@
 // Application Dependencies
 const express = require('express');
 const superagent = require('superagent');
+const { response } = require('express');
 
 // Application Setup
 const app = express();
@@ -13,10 +14,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 
+
 // Set the view engine for server-side templating
 app.set('view engine', 'ejs');
 
 // API Routes
+
 // Renders the home page
 app.get('/', renderHomePage);
 
@@ -35,10 +38,12 @@ app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
 // Only show part of this to get students started
 function Book(info) {
   const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
-
+  this.image_url = info.imageLinks.thumbnail || placeholderImage;
   this.title = info.title || 'No title available';
-
+  this.authors = info.authors || 'No authors available';
+  this.description = info.description || 'No description availble'
 }
+
 
 // Note that .ejs file extension is not required
 
@@ -50,12 +55,13 @@ function showForm(request, response) {
   response.render('pages/new.ejs');
 }
 
+
 // No API key required
 // Console.log request.body and request.body.search
 function createSearch(request, response) {
   let url = 'https://www.googleapis.com/books/v1/volumes?q=';
 
-  console.log(request.body);
+  // console.log(request.body);
   console.log(request.body.search);
 
   if (request.body.search[1] === 'title') { url += `+intitle:${request.body.search[0]}`; }
@@ -63,6 +69,15 @@ function createSearch(request, response) {
 
   superagent.get(url)
     .then(apiResponse => apiResponse.body.items.map(bookResult => new Book(bookResult.volumeInfo)))
-    .then(results => response.render('pages/show', { searchResults: results }));
-  // how will we handle errors?
+    .then(results => response.render('pages/show', { searchResults: results }))
+    .catch(err => {
+      renderErrorPage(err, response)
+    });
+}
+
+function renderErrorPage(error, response) {
+  let viewModel = {
+    error: error.message
+  }
+  response.status(500).render('pages/error', viewModel);
 }
