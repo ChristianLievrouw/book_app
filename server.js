@@ -4,14 +4,21 @@
 const express = require('express');
 const superagent = require('superagent');
 const { response } = require('express');
+const pg = require('pg');
 
 // Application Setup
 const app = express();
 const PORT = process.env.PORT || 3000;
+require('dotenv').config();
+
 
 // Application Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+console.log(process.env.DATABASE_URL)
+
+const client = new pg.Client(process.env.DATABASE_URL);
+client.on('error', err => console.log(err));
 
 // Set the view engine for server-side templating
 app.set('view engine', 'ejs');
@@ -23,6 +30,8 @@ app.set('view engine', 'ejs');
 // Renders the home page
 app.get('/', renderHomePage);
 
+// app.get('/books/:id', getBook);
+
 // Renders the search form
 app.get('/searches/new', showForm);
 
@@ -32,7 +41,15 @@ app.post('/searches', createSearch);
 // Catch-all
 app.get('*', (request, response) => response.status(404).send('This route does not exist'));
 
-app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
+client.connect()
+  .then(() => {
+    app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
+  })
+  .catch(err => {
+    errorHandler(err, response)
+  });
+
+// app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
 
 // HELPER FUNCTIONS
 // Only show part of this to get students started
@@ -41,18 +58,34 @@ function Book(info) {
   this.image_url = info.imageLinks.thumbnail || placeholderImage;
   this.title = info.title || 'No title available';
   this.authors = info.authors || 'No authors available';
-  this.description = info.description || 'No description availble'
+  this.description = info.description || 'No description available';
+  this.isbn = info.industryIdentifiers.identifier || 'No ISBN availble';
+  this.bookShelf = info.catagories || 'Bookshelf not found';
 }
 
 
 // Note that .ejs file extension is not required
 
 function renderHomePage(request, response) {
-  response.render('pages/index');
+  const SQL = `
+  SELECT *
+  FROM userbooks;
+  `;
+  client.query(SQL)
+    .then(result => {
+      let viewModel = {
+        userBooks: result.rows,
+      };
+      response.render('pages/index', viewModel);
+    })
+    .catch(err => {
+      errorHandler(err, response)
+    });
+  // response.render('pages/index');
 }
 
 function showForm(request, response) {
-  response.render('pages/new.ejs');
+  response.render('pages/new');
 }
 
 
@@ -71,13 +104,30 @@ function createSearch(request, response) {
     .then(apiResponse => apiResponse.body.items.map(bookResult => new Book(bookResult.volumeInfo)))
     .then(results => response.render('pages/show', { searchResults: results }))
     .catch(err => {
-      renderErrorPage(err, response)
+      errorHandler(err, response)
     });
 }
 
-function renderErrorPage(error, response) {
+// function getBook(request, response) {
+//   const SQL = `
+//     SELECT *
+//     FROM userBooks 
+//     WHERE id = $1
+//     `;
+//   let values = [request.params.id];
+//   clientInformation.query(SQL, values)
+//     .then(result => {
+//       let viewModel = {
+//         book: result.rows[0],
+//       };
+//       response.render('pages/index', viewModel);
+//     })
+//     .catch(error => errorHandler(error, response));
+// }
+
+function errorHandler(error, response) {
   let viewModel = {
-    error: error.message
+    error: error
   }
   response.status(500).render('pages/error', viewModel);
 }
