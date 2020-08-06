@@ -49,10 +49,8 @@ client.connect()
     app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
   })
   .catch(err => {
-    errorHandler(err, response)
+    throw err
   });
-
-// app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
 
 // HELPER FUNCTIONS
 // Only show part of this to get students started
@@ -92,7 +90,6 @@ function renderHomePage(request, response) {
     .catch(err => {
       errorHandler(err, response)
     });
-  // response.render('pages/index');
 }
 
 function showForm(request, response) {
@@ -121,23 +118,6 @@ function createSearch(request, response) {
       errorHandler(err, response)
     });
 }
-
-// function getBook(request, response) {
-//   const SQL = `
-//     SELECT *
-//     FROM userBooks 
-//     WHERE id = $1
-//     `;
-//   let values = [request.params.id];
-//   clientInformation.query(SQL, values)
-//     .then(result => {
-//       let viewModel = {
-//         book: result.rows[0],
-//       };
-//       response.render('pages/index', viewModel);
-//     })
-//     .catch(error => errorHandler(error, response));
-// }
 
 function errorHandler(error, response) {
   let viewModel = {
