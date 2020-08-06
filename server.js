@@ -60,7 +60,7 @@ function Book(info) {
   this.title = info.title || 'No title available';
   this.authors = info.authors || 'No authors available';
   this.description = info.description || 'No description available';
-  this.isbn = info.industryIdentifiers || 'No ISBN available';
+  this.isbn = info.industryIdentifiers.map(i=> i.identifier).join(', ').toString() || 'No ISBN available';
   this.bookShelf = info.categories || 'Bookshelf not found';
 }
 
