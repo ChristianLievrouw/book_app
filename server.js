@@ -29,6 +29,9 @@ app.get('/searches/new', showForm);
 // Creates a new search to the Google Books API
 app.post('/searches', createSearch);
 
+// Creates a view details after selecting a book
+app.get('/books/:id', viewDetails);
+
 // Catch-all
 app.get('*', (request, response) => response.status(404).send('This route does not exist'));
 
@@ -44,7 +47,15 @@ function Book(info) {
   this.description = info.description || 'No description availble'
 }
 
-
+function View(viewDetails) {
+  const placeholderImage = 'https://www.googleapis.com/books/v1/volumes?q=';
+  this.id = viewDetails.id;
+  this.image_url = viewDetails.image_url;
+  this.title = viewDetails.title;
+  this.authors = viewDetails.authors;
+  this.description = viewDetails.description;
+  this.bookshelf = viewDetails.bookshelf;
+}
 // Note that .ejs file extension is not required
 
 function renderHomePage(request, response) {
@@ -55,6 +66,9 @@ function showForm(request, response) {
   response.render('pages/new.ejs');
 }
 
+function viewDetails(request, response) {
+  response.render('pages/details');
+}
 
 // No API key required
 // Console.log request.body and request.body.search
