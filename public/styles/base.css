@@ -1,6 +1,8 @@
-@import 'layout.css';
-@import 'modules.css';
-@import 'reset.css';
+#book-card{
+  border-bottom: solid;
+  border-style: solid;
+  border-width: 1px;
+}
 
 
 header {
@@ -8,5 +10,27 @@ header {
 }
 
 body { 
-  background-color: lightgray;
+  background-color: cornsilk;
+}
+
+p{
+  color:rgb(6, 6, 126);
+  padding: 10px;
+  background-color: black;
+  color: aliceblue;
+  border-top: red;
+  border-style: solid;
+  border-width: 15px;
+}
+
+img{
+  border-top: red;
+  border-style: solid;
+  border-width: 50px;
+  
+}
+
+footer{
+  font-family: fantasy;
+  font-weight: bolder;
 }
