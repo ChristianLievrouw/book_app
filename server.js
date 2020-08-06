@@ -99,9 +99,9 @@ function showForm(request, response) {
   response.render('pages/new');
 }
 
-function viewDetails(request, response) {
-  response.render('pages/details');
-}
+// function viewDetails(request, response) {
+//   response.render('pages/details');
+// }
 
 // No API key required
 // Console.log request.body and request.body.search
@@ -117,6 +117,23 @@ function createSearch(request, response) {
   superagent.get(url)
     .then(apiResponse => apiResponse.body.items.map(bookResult => new Book(bookResult.volumeInfo)))
     .then(results => response.render('pages/show', { searchResults: results }))
+    .catch(err => {
+      errorHandler(err, response)
+    });
+}
+
+function viewDetails (request, response) {
+  let url = 'https://www.googleapis.com/books/v1/volumes?q=';
+
+  // console.log(request.body);
+  console.log(request.body.viewDetails);
+
+  if (request.body.viewDetails[1] === 'title') { url += `+intitle:${request.body.viewDetails[0]}`; }
+  if (request.body.viewDetails[1] === 'author') { url += `+inauthor:${request.body.viewDetails[0]}`; }
+
+  superagent.get(url)
+    .then(apiResponse => apiResponse.body.items.map(viewDetails => new View(viewDetails.volumeInfo)))
+    .then(results => response.render('pages/details', { viewDetails: results }))
     .catch(err => {
       errorHandler(err, response)
     });
