@@ -126,7 +126,6 @@ function showForm(request, response) {
 function createSearch(request, response) {
   let url = 'https://www.googleapis.com/books/v1/volumes?q=';
 
-  // console.log(request.body);
   console.log(request.body.search);
 
   if (request.body.search[1] === 'title') { url += `+intitle:${request.body.search[0]}`; }
