@@ -30,6 +30,8 @@ app.set('view engine', 'ejs');
 // Renders the home page
 app.get('/', renderHomePage);
 
+// app.post('/searches', addBooks);
+
 // app.get('/books/:id', getBook);
 
 // Renders the search form
@@ -56,12 +58,12 @@ client.connect()
 // Only show part of this to get students started
 function Book(info) {
   const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
-  this.image_url = info.imageLinks.thumbnail || placeholderImage;
-  this.title = info.title || 'No title available';
-  this.authors = info.authors || 'No authors available';
-  this.description = info.description || 'No description available';
-  this.isbn = info.industryIdentifiers.map(i=> i.identifier).join(', ').toString() || 'No ISBN available';
-  this.bookShelf = info.categories || 'Bookshelf not found';
+  this.image_url = info.imageLinks ? info.imageLinks.thumbnail : placeholderImage;
+  this.title = info.title ? info.title : 'No title available';
+  this.authors = info.authors ? info.authors.join(', ') : 'No authors available';
+  this.description = info.description ? info.description : 'No description availble';
+  this.isbn = info.industryIdentifiers ? info.industryIdentifiers.map(i => i.identifier).join(', ').toString() : 'No ISBN availble';
+  this.bookShelf = info.categories ? info.categories :'Bookshelf not found';
 }
 
 function View(viewDetails) {
@@ -76,6 +78,7 @@ function View(viewDetails) {
 // Note that .ejs file extension is not required
 
 function renderHomePage(request, response) {
+  // console.log(request.body.search)
   const SQL = `
   SELECT *
   FROM userbooks;
@@ -99,6 +102,23 @@ function showForm(request, response) {
 function viewDetails(request, response) {
   response.render('pages/details');
 }
+
+// function addBooks(request, response) {
+//   console.log(request);
+//   let { ImagUrl, title, author, descriptions, isbn, bookShelf } = request.body.search;
+//   const SQL = `
+//   INSERT INTO userbooks (ImagUrl, title, author, descriptions, isbn, bookShelf)
+//   VALUES ($1, $2, $3, $4, $5, $6)
+//   `;
+//   const values = [ImagUrl, title, author, descriptions, isbn, bookShelf];
+//   client.query(SQL, values)
+//     .then(results => {
+//       response.redirect('/')
+//     })
+//     .catch(err => {
+//       errorHandler(err, response)
+//     });
+// }
 
 // No API key required
 // Console.log request.body and request.body.search
