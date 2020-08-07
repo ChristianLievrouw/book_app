@@ -3,22 +3,22 @@
   <head>
     <title>View Details</title>
   </head>
+  <body>
   <h1>View Details</h1>
    <nav>
        <ol>
         <li><a href="show.ejs">Book Collection</a></li>
        </ol>
     </nav>
-  <body>
     <section>
-      <h2>%=book.id%</h2>
-      <img src="<%= book.image_url %><" alt="<%= book.title %>">
-      <h3>%=book.author%</h3>
+      <h2><%=book.id%></h2>
+      <img < src=%book.imagurl% alt=%book.title%>
+      <h3><%=book.author%></h3>
       <main>
       <p><%=book.description %></p>    
       </main>
-        <h4>%=book.isbn %></h4>
-        <h5>%=book.Bookshelf%</h5>
+        <h4><%=book.isbn %></h4>
+        <h5><%=book.bookshelf%></h5>
       </section>
   </body>
 </html>
