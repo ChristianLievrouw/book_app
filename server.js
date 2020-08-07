@@ -69,10 +69,11 @@ function Book(info) {
 function View(viewDetails) {
   const placeholderImage = 'https://www.googleapis.com/books/v1/volumes?q=';
   this.id = viewDetails.id;
-  this.image_url = viewDetails.image_url;
+  this.imagurl = viewDetails.ImagUrl;
   this.title = viewDetails.title;
-  this.authors = viewDetails.authors;
+  this.author = viewDetails.authors;
   this.description = viewDetails.description;
+  this.isbn = viewDetails.isbn;
   this.bookshelf = viewDetails.bookshelf;
 }
 // Note that .ejs file extension is not required
@@ -99,9 +100,9 @@ function showForm(request, response) {
   response.render('pages/new');
 }
 
-function viewDetails(request, response) {
-  response.render('pages/details');
-}
+// function viewDetails(request, response) {
+//   response.render('pages/details');
+// }
 
 // function addBooks(request, response) {
 //   console.log(request);
@@ -134,6 +135,23 @@ function createSearch(request, response) {
   superagent.get(url)
     .then(apiResponse => apiResponse.body.items.map(bookResult => new Book(bookResult.volumeInfo)))
     .then(results => response.render('pages/show', { searchResults: results }))
+    .catch(err => {
+      errorHandler(err, response)
+    });
+}
+// View Details Route
+function viewDetails (request, response) {
+  let url = 'https://www.googleapis.com/books/v1/volumes/';
+
+  // console.log(request.body);
+  console.log(request.body.items);
+
+  if (request.body.items[1] === 'title') { url += `+intitle:${request.body.items[0]}`; }
+  if (request.body.items[1] === 'author') { url += `+inauthor:${request.body.items[0]}`; }
+
+  superagent.get(url)
+    .then(apiResponse => apiResponse.body.items.map(viewDetails => new View(viewDetails.volumeInfo)))
+    .then(results => response.render('pages/details', { viewDetails: results }))
     .catch(err => {
       errorHandler(err, response)
     });
