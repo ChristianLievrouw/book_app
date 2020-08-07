@@ -30,6 +30,8 @@ app.set('view engine', 'ejs');
 // Renders the home page
 app.get('/', renderHomePage);
 
+// app.post('/searches', addBooks);
+
 // app.get('/books/:id', getBook);
 
 // Renders the search form
@@ -49,21 +51,19 @@ client.connect()
     app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
   })
   .catch(err => {
-    errorHandler(err, response)
+    throw err
   });
-
-// app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
 
 // HELPER FUNCTIONS
 // Only show part of this to get students started
 function Book(info) {
   const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
-  this.image_url = info.imageLinks.thumbnail || placeholderImage;
-  this.title = info.title || 'No title available';
-  this.authors = info.authors || 'No authors available';
-  this.description = info.description || 'No description available';
-  this.isbn = info.industryIdentifiers.identifier || 'No ISBN availble';
-  this.bookShelf = info.catagories || 'Bookshelf not found';
+  this.image_url = info.imageLinks ? info.imageLinks.thumbnail : placeholderImage;
+  this.title = info.title ? info.title : 'No title available';
+  this.authors = info.authors ? info.authors.join(', ') : 'No authors available';
+  this.description = info.description ? info.description : 'No description availble';
+  this.isbn = info.industryIdentifiers ? info.industryIdentifiers.map(i => i.identifier).join(', ').toString() : 'No ISBN availble';
+  this.bookShelf = info.categories ? info.categories :'Bookshelf not found';
 }
 
 function View(viewDetails) {
@@ -79,6 +79,7 @@ function View(viewDetails) {
 // Note that .ejs file extension is not required
 
 function renderHomePage(request, response) {
+  // console.log(request.body.search)
   const SQL = `
   SELECT *
   FROM userbooks;
@@ -93,7 +94,6 @@ function renderHomePage(request, response) {
     .catch(err => {
       errorHandler(err, response)
     });
-  // response.render('pages/index');
 }
 
 function showForm(request, response) {
@@ -102,6 +102,23 @@ function showForm(request, response) {
 
 // function viewDetails(request, response) {
 //   response.render('pages/details');
+// }
+
+// function addBooks(request, response) {
+//   console.log(request);
+//   let { ImagUrl, title, author, descriptions, isbn, bookShelf } = request.body.search;
+//   const SQL = `
+//   INSERT INTO userbooks (ImagUrl, title, author, descriptions, isbn, bookShelf)
+//   VALUES ($1, $2, $3, $4, $5, $6)
+//   `;
+//   const values = [ImagUrl, title, author, descriptions, isbn, bookShelf];
+//   client.query(SQL, values)
+//     .then(results => {
+//       response.redirect('/')
+//     })
+//     .catch(err => {
+//       errorHandler(err, response)
+//     });
 // }
 
 // No API key required
@@ -139,23 +156,6 @@ function viewDetails (request, response) {
       errorHandler(err, response)
     });
 }
-
-// function getBook(request, response) {
-//   const SQL = `
-//     SELECT *
-//     FROM userBooks 
-//     WHERE id = $1
-//     `;
-//   let values = [request.params.id];
-//   clientInformation.query(SQL, values)
-//     .then(result => {
-//       let viewModel = {
-//         book: result.rows[0],
-//       };
-//       response.render('pages/index', viewModel);
-//     })
-//     .catch(error => errorHandler(error, response));
-// }
 
 function errorHandler(error, response) {
   let viewModel = {
