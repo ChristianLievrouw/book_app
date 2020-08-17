@@ -8,7 +8,14 @@
 </head>
 <header>
  <h1>Hello world!!</h1>
- <%= userBooks %>
+ <% userBooks.forEach(book =>{ %>
+ <div class="book-card">
+  <img src="<%= book.image_url %><" alt="<%= book.title %>">
+  <h3><%= book.title %></h3>
+  <span><%= book.authors %></span>
+  <p><%= book.description %></p>
+</div>
+ <% }) %>
 </header>
 <body>
   <%- include('../layout/footer') %>
